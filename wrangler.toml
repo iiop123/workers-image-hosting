@@ -1,0 +1,9 @@
+name = "img"
+main = "./src/index.js"
+compatibility_date = "2022-11-08"
+
+kv_namespaces = [
+  { binding = "LINK", id = "11111",preview_id='11111'}
+]
+[site]
+bucket = "./static/dist"
