@@ -6,6 +6,7 @@ export default{
         return{
         file_info:[],
         img_link:[],
+        status:false,
         breakpoints: {
   1200: { //当屏幕宽度小于等于1200
     rowPerView: 4,
@@ -39,12 +40,13 @@ export default{
       }
       
       setTimeout(()=>{
-        
+        this.status=true
       fetch('/api',{
       method:'POST',
       body:form
     }).then((e)=>{
     return e.json()}).then((re)=>{
+      this.status=false
       for (let i = 0; i < re.src.length; i++) {
         this.img_link.push(re.src[i]) 
       }
@@ -70,6 +72,12 @@ export default{
 }
 </script>
 <template>
+  <Transition name="loading">
+    <div v-if="status" class="loading">
+    <img src="https://img.giao111.workers.dev/api/img/F3BMbG" style="width: 5vh;">
+    <h4>上传中...</h4>
+    </div>
+    </Transition>
 <Waterfall :list="file_info" :breakpoints="breakpoints">
   <template #item="{ item, url, index }">
     <div class="mdui-card">
@@ -105,5 +113,25 @@ export default{
 .lazy__img[lazy=error] {
   padding: 5em 0;
   width: 48px;
+}
+.loading-enter-active,
+.loading-leave-active {
+  transition: all 0.8s ease;
+}
+.loading-enter-from,
+.loading-leave-to {
+  opacity: 0;
+}
+.loading{
+  left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    text-align: center;
+    padding-top: 15px;
+    z-index: 999;
+    width: 16vh;
+    position: absolute;
+    background-color: #e5dedecf;
+    box-sizing: border-box;
 }
 </style>
