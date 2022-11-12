@@ -37,6 +37,7 @@ export default{
         let reader  = new FileReader();
         reader.onload=(e)=> {
           form.append('img',inp_file[i])
+          this.status=true
           return this.file_info.push({
             name:inp_file[i].name,
             src:e.target.result
@@ -48,7 +49,6 @@ export default{
       }
       
       setTimeout(()=>{
-        this.status=true
       fetch('/api',{
       method:'POST',
       body:form
