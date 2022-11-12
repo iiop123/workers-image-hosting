@@ -9,13 +9,16 @@
 #### 使用:在 根目录和static目录输入
 
     npm i
+	
+#### 	再进入static目录编译Vue
+    npm run build
 #### 	之后修改wrangler.toml
 
 
     kv_namespaces = [
       { binding = "LINK", id = "11111",preview_id='11111'}//ID修改为自己创建的KV的id，preview_id是dev环境绑定的kv可以去掉
     ]
-### 	之后再执行
+### 	之后在根目录执行
 
 
     wrangler publish
