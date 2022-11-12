@@ -6,11 +6,9 @@ import 'vue-waterfall-plugin-next/style.css'
 export default{
     data(){
         return{
-        file_info:[],
-        img_link:[],
+        list:[],
         status:false,
         start:true,
-        change:true,
         breakpoints: {
   1200: { //当屏幕宽度小于等于1200
     rowPerView: 4,
@@ -26,56 +24,28 @@ export default{
     },
     mounted(){
      this.start=false
+        fetch('/query',{
+            method:'GET'
+        }).then((response)=>{
+            return response.json()
+        }).then((succ)=>{
+            for (let i = 0; i < succ.keys.length; i++) {
+                this.list.push(succ.keys[i])
+            }
+            this.list.sort((a,b)=>{
+              return b.metadata.date-a.metadata.date
+            })
+        })
     },
     methods:{
-    file(){
-      let file_id=this.$refs.inp
-      let inp_file=file_id.files
-      this.change=false
-      let form=new FormData()
-        for (let i = 0; i < inp_file.length; i++) {
-        let reader  = new FileReader();
-        reader.onload=(e)=> {
-          form.append('img',inp_file[i])
-          return this.file_info.push({
-            name:inp_file[i].name,
-            src:e.target.result
-          })
-        }
-        if (inp_file) {
-          reader.readAsDataURL(inp_file[i])
-        }
-      }
-      
-      setTimeout(()=>{
-        this.status=true
-      fetch('/api',{
-      method:'POST',
-      body:form
-    }).then((e)=>{
-      if (e.ok) {
-        return e.json()
-      }else{
-        throw e
-      }
-    }).then((re)=>{
-      this.status=false
-      for (let i = 0; i < re.src.length; i++) {
-        this.img_link.push(re.src[i]) 
-      }
-    }).catch(async (error)=>{
-      const json=await error.json();
-      this.file_info=[]
-      alert(json.err);
-      this.status=false
-    })
-  },600)      
+    remove(i){
+      this.file_info=this.file_info.filter((t)=>t!=i)
     },
     doCopy(e) {
-        this.$copyText(this.img_link[e]).then(()=>{
+        this.$copyText('https://img.giao111.workers.dev/api/img/'+this.list[e].name).then(()=>{
           mdui.alert('复制成功')
         },()=>{
-          mdui.alert('上传中...')
+          mdui.alert('失败')
         }
         )
       }
@@ -84,29 +54,24 @@ export default{
     Waterfall,
     LazyImg,
     Loading
-}
+  }
 }
 </script>
 <template>
   <Transition name="loading">
     <div v-if="status" class="loading">
-    <img src="https://img.giao111.workers.dev/api/img/DbscdA" 
-    style="width: 5vh;">
     <h4>上传中...</h4>
     </div>
     </Transition>
     <Loading :active="this.start" loader="bars" width="50" height="50" color="rgb(0,123,255)"></Loading>
-    <div style="font-weight: 300; top:20%;" class="center" v-if="change">
-      GITHUB:<a href="https://github.com/iiop123/workers-image-hosting">Workers-ImageHosting</a>
-    </div>
-<Waterfall :list="file_info" :breakpoints="breakpoints">
+<Waterfall :list="this.list" :breakpoints="breakpoints">
   <template #item="{ item, url, index }">
     <div class="mdui-card">
   <div class="mdui-card-media">
-    <LazyImg :url="url" />
+    <LazyImg :url="'/api/img/'+item.name" />
     <div class="mdui-card-media-covered">
       <div class="mdui-card-primary">
-        <div class="mdui-card-primary-title">第{{index}}张</div>
+        <div class="mdui-card-primary-title">{{item.name}}</div>
       </div>
     </div>
   </div>
@@ -116,10 +81,6 @@ export default{
 </div>
   </template>
 </Waterfall>
-<button class="mdui-fab mdui-color-indigo mdui-text-color-white center" style="bottom: 10px;" @change="file">
-  <i class="mdui-icon material-icons">add</i>
-  <input type="file" accept="image/*" ref="inp" multiple style="opacity: 0;">
-</button>
 </template>
 <style>
 .lazy__img[lazy=loading] {
