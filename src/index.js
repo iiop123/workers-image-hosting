@@ -41,24 +41,30 @@ router.post(
       let form=req.body.formData()
       let out=[]
       let img=(await form).getAll('img')
+      const img_check=/^[\s\S]*\.(pdf|sh|zip|txt|docx|xlsx|exe|apk)$/
       for (let i = 0; i < img.length; i++) {
+        if (img_check.test(img[i].name)) {
+          res.status=400
+          res.body={name:img[i].name,err:'非图片文件'}
+        }else{
         let url=await randomString()
         let check=await LINK.get(url)
         if (check!==null) {
           url=await randomString()
         }
       let stream=img[i].stream()
-        await LINK.put(url,stream)
+        await LINK.put(url,stream,{
+          metadata:{
+            size:img[i].size,
+            name:url,
+            date:new Date().getTime()
+          }
+        })
         out.push(req.url+'/img/'+url)
-      }
       res.body = {src:out}
-    }
+        }
+    }}
   );
-  router.get('/api/img/:p', async ({req,res})=>{
-    let body=await LINK.get(req.params.p,{cacheTtl:864000,type:"stream"})
-    res.body=body
-    
-  })
   
   // Favicon route for fun :)
   router.get('/favicon.ico', ({ res }) => {
