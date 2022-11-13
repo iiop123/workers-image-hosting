@@ -42,7 +42,7 @@ export default{
       this.file_info=this.file_info.filter((t)=>t!=i)
     },
     doCopy(e) {
-        this.$copyText('https://img.giao111.workers.dev/api/img/'+this.list[e].name).then(()=>{
+        this.$copyText(`${window.location.origin}/api/img/`+this.list[e].name).then(()=>{
           mdui.alert('复制成功')
         },()=>{
           mdui.alert('失败')

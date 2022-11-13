@@ -89,11 +89,7 @@ export default{
 </script>
 <template>
   <Transition name="loading">
-    <div v-if="status" class="loading">
-    <img src="https://img.giao111.workers.dev/api/img/DbscdA" 
-    style="width: 5vh;">
-    <h4>上传中...</h4>
-    </div>
+    <Loading :active="this.status" loader="bars" width="50" height="50" color="rgb(0,123,255)"></Loading>
     </Transition>
     <Loading :active="this.start" loader="bars" width="50" height="50" color="rgb(0,123,255)"></Loading>
     <div style="font-weight: 300; top:20%;" class="center" v-if="change">
