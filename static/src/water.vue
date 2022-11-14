@@ -66,7 +66,7 @@ export default{
     }).catch(async (error)=>{
       const json=await error.json();
       this.file_info=[]
-      alert(json.err);
+      alert(json.src);
       this.status=false
     })
   },600)      
