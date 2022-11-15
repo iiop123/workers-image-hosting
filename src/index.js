@@ -4,10 +4,9 @@ import {
     normalizePathnameMiddleware
   } from '@cfworker/web';
 import { getAssetFromKV } from "@cloudflare/kv-asset-handler";
-const u = '123';//展示页面登录用户名
-const p = '123';//密码
+const pass='123'//默认登录密码
 /*
-默认用户名密码都是123
+默认密码都是123
 */
 
   const router = new Router();
@@ -32,7 +31,7 @@ const p = '123';//密码
         event.respondWith(handleEvent(event));
       }
       if (list.test(pathname.pathname)) {
-        event.respondWith(listhandle(event));
+        event.respondWith(handleEvent(event));
       }  
     });
     
@@ -86,15 +85,13 @@ const p = '123';//密码
   router.get('/',({res})=>{
     res.redirect('/index.html')
   })
-  router.get('/list',({res})=>{
-    res.redirect('/list.html')
-  })
+  
 router.post(
     '/api', async ({req,res})=> {
       let form=req.body.formData()
       let out=[]
       let img=(await form).getAll('img')
-      const img_check=new RegExp("(.*?)\.(png|jpe?g|gif|bmp|psd|tiff|tga|eps)","i")
+      const img_check=new RegExp("(.*?)\.(png|jpe?g|gif|bmp|psd|tiff|tga|webp)","i")
       for (let i = 0; i < img.length; i++) {
         if (img_check.test(img[i].name)) {
           let url=await randomString()
@@ -134,9 +131,16 @@ router.post(
           <text font-size="120" font-family="Arial, Helvetica, sans-serif" text-anchor="end" fill="#FFF" x="185" y="185">W</text>
         </svg>`;
   });
-  router.get('/query',async ({req,res})=>{
-    const key=await LINK.list()
+  
+  router.get('/query/:pass',async ({req,res})=>{
+    if (req.params.pass===pass) {
+      const key=await LINK.list()
     res.body=key
+    }
+    else{
+      res.status=400
+      res.body={info:'密码错误'}
+    }
   })
   
 
