@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@cfworker/web": "^1.12.5"
+    "@cfworker/web": "^1.12.5",
+    "@cloudflare/kv-asset-handler": "^0.2.0"
   }
 }
