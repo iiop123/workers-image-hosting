@@ -3,7 +3,7 @@ import { LazyImg, Waterfall } from 'vue-waterfall-plugin-next'
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/css/index.css';
 import 'vue-waterfall-plugin-next/style.css'
-import 'https://cdn.bootcdn.net/ajax/libs/viewerjs/1.11.1/viewer.min.js'
+import 'https://cdn.jsdelivr.net/npm/viewerjs@1.11.1/dist/viewer.min.js'
 export default{
     data(){
         return{
@@ -26,7 +26,7 @@ export default{
     methods:{
       query(){
      this.start=false
-        fetch(`/query/${this.pass}`,{
+        fetch(`/query?pass=${this.pass}`,{
             method:'GET'
         }).then((response)=>{
           if (response.ok) {
@@ -96,7 +96,7 @@ export default{
 </Waterfall>
 </template>
 <style>
-@import 'https://cdn.bootcdn.net/ajax/libs/viewerjs/1.11.1/viewer.min.css';
+@import 'https://cdn.jsdelivr.net/npm/viewerjs@1.11.1/dist/viewer.min.css';
 .lazy__img[lazy=loading] {
   padding: 5em 0;
   width: 48px;

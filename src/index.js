@@ -104,6 +104,7 @@ router.post(
           metadata:{
             size:img[i].size,
             name:url,
+            type:img[i].type,
             date:new Date().getTime()
           }
         })
@@ -119,6 +120,8 @@ router.post(
   );
   router.get('/api/img/:p', async ({req,res})=>{
     let body=await LINK.get(req.params.p,{cacheTtl:864000,type:"stream"})
+    const { metadata } = await LINK.getWithMetadata(req.params.p);
+    res.type=metadata.type
     res.body=body
     
   })  
@@ -132,8 +135,9 @@ router.post(
         </svg>`;
   });
   
-  router.get('/query/:pass',async ({req,res})=>{
-    if (req.params.pass===pass) {
+  router.get('/query',async ({req,res})=>{
+    const paramas=req.url.searchParams
+    if (paramas.get('pass')==pass) {
       const key=await LINK.list()
     res.body=key
     }
