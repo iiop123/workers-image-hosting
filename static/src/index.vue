@@ -163,8 +163,8 @@ setTimeout(()=>{
 }
 </script>
 <template>
-  <div id="drag" style="position: fixed; inset:0;">
-    <div style="position: fixed; bottom: 0; left: 0; right: 0; top: 0; z-index: 999;" v-show="over_page">  
+  <div id="drag" style="position: absolute; inset:0;">
+    <div style="inset: 0; z-index: 999;" v-show="over_page">  
       <div style="background-color: white; opacity: 0.5; inset: 0; position: absolute;" ></div>
     <div style="border: dashed 2px; top: 50%; text-align: center; z-index: 999; width: 50%; height: 30%;" class="center">
       <div style="text-align: center;padding-top: 10%;position: absolute;width: 100%;height: 100%;" class="drop_text">
@@ -196,7 +196,7 @@ setTimeout(()=>{
 </div>
   </template>
 </Waterfall>
-<button class="mdui-fab mdui-color-indigo mdui-text-color-white center" style="bottom: 10px;" @change="file">
+<button class="mdui-fab mdui-color-indigo mdui-text-color-white center" style="bottom: 10px; position: fixed;" @change="file">
   <i class="mdui-icon material-icons">add</i>
   <input type="file" accept="image/*" ref="inp" multiple style="opacity: 0;">
 </button>
