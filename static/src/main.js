@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
 import VueClipboard from 'vue-clipboard2'
-import water from './water.vue'
+import index from './index.vue'
 
-createApp(water).use(VueClipboard).mount('#app')
+createApp(index).use(VueClipboard).mount('#app')

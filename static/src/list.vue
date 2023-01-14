@@ -46,13 +46,11 @@ export default{
           alert('密码错误')
         })
     },
-    dis(e){
+    display(e){
       const gallery = new Viewer(document.getElementById('images'));
       gallery.show()
     },
-    remove(i){
-      this.file_info=this.file_info.filter((t)=>t!=i)
-    },
+
     doCopy(e) {
         this.$copyText(`${window.location.origin}/api/img/`+this.list[e].name).then(()=>{
           mdui.alert('复制成功')
@@ -81,7 +79,7 @@ export default{
   <template #item="{ item, url, index }">
     <div class="mdui-card">
   <div class="mdui-card-media">
-    <LazyImg :url="'/api/img/'+item.name" @click="dis($event.target)"/>
+    <LazyImg :url="'/api/img/'+item.name" @click="display($event.target)"/>
     <div class="mdui-card-media-covered">
       <div class="mdui-card-primary">
         <div class="mdui-card-primary-title">{{item.name}}</div>

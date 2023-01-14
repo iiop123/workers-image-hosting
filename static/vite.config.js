@@ -10,7 +10,7 @@ export default defineConfig({
     rollupOptions: {
         input: {
             index: path.resolve(__dirname, 'index.html'),
-            about: path.resolve(__dirname, 'list.html'),
+            list: path.resolve(__dirname, 'list.html'),
         },
     },
 }
