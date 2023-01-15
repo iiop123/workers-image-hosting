@@ -9,7 +9,6 @@ export default{
     data(){
         return{
         file_info:[],
-        img_link:[],
         status:false,
         over_page:false,
         powerby:true,
@@ -57,93 +56,84 @@ export default{
     file(){
       let file_id=this.$refs.inp
       this.powerby=false
-      let form=new FormData()
       const that=this
-
-        for (let i = 0; i < file_id.files.length; i++) {
-        let reader  = new FileReader();
-  
-        reader.onload=(e)=> {
-          form.append('img',file_id.files[i])
-          this.status=true
-          return this.file_info.push({
-            name:file_id.files[i].name,
-            src:e.target.result
-          })
-        }
-        if (file_id.files) {
-          reader.readAsDataURL(file_id.files[i])
-        }
-      }
-      setTimeout(()=>{
-  let UploadObj={
+      let uplist=[]
+       ////////
+      async function up(file) {
+          let f=new FormData()
+          f.append('img',file)
+          let UploadObj={
         method:'post',
         url:'/api',
-        data:form
+        data:f
       }
-      axios(UploadObj).then(async e=>{
-        let restojson=e.data;
-        for (let i = 0; i < restojson.src.length; i++) {
-          that.img_link.push(restojson.src[i])
+      return axios(UploadObj)
+      }
+      ////
+
+        for (let i = 0; i < file_id.files.length; i++) {
+          if (file_id.files[i].size>26214400) {
+            mdui.alert('文件大于25MB')
+         that.status=false
+         continue
+          }
+         uplist.push(up(file_id.files[i]))
+         that.status=true
         }
+        Promise.all(uplist).then(res=>{
+          for (let i = 0; i < uplist.length; i++) {
+            console.log(res.data);
+            that.file_info.push({
+              link:res[i].data.link
+            }) 
+          }
+          that.status=false
+        }).catch(err=>{
+            mdui.alert(err.response.data.link)
         return that.status=false
-      }).catch(async err=>{
-        let info=err.response.data
-        console.log(info);
-        that.file_info=[]
-        alert(info.src)
-        return that.status=false
-      }) 
-},600)
-     
+        })
     },
     drop_upload(files){
       let file_id=files.dataTransfer.files
       this.powerby=false
       const that=this
       this.over_page=false
-      let form=new FormData()
-
-        for (let i = 0; i < file_id.length; i++) {
-        let reader  = new FileReader();
-  
-        reader.onload=(e)=> {
-          form.append('img',file_id[i])
-          this.status=true
-          return this.file_info.push({
-            name:file_id[i].name,
-            src:e.target.result
-          })
-        }
-        if (file_id) {
-          reader.readAsDataURL(file_id[i])
-        }
-      }
-      
-setTimeout(()=>{
-  let UploadObj={
+      let uplist=[]
+      ////////
+      async function up(file) {
+          let f=new FormData()
+          f.append('img',file)
+          let UploadObj={
         method:'post',
         url:'/api',
-        data:form
+        data:f
       }
-      axios(UploadObj).then(async e=>{
-        let restojson=e.data;
- 
-        for (let i = 0; i < restojson.src.length; i++) {
-          that.img_link.push(restojson.src[i])
+      return axios(UploadObj)
+      }
+      ////
+
+        for (let i = 0; i < file_id.length; i++) {
+          if (file_id[i].size>26214400) {
+            mdui.alert('文件大于25MB')
+               continue
+          }
+         that.status=true
+        uplist.push(up(file_id[i]))
         }
+        Promise.all(uplist).then(res=>{
+          for (let i = 0; i < uplist.length; i++) {
+            that.file_info.push({
+              link:res[i].data.link
+            }) 
+          }
+          return that.status=false
+        }).catch(err=>{
+            mdui.alert(err.response.data.link)
         return that.status=false
-      }).catch(async err=>{
-        let info=err.response.data
-        console.log(info);
-        that.file_info=[]
-        alert(info.src)
-        return that.status=false
-      }) 
-},600)
+        })
     },
     doCopy(e) {
-        this.$copyText(this.img_link[e]).then(()=>{
+        this.$copyText(this.file_info[e].link).then(()=>{
           mdui.alert('复制成功')
         },()=>{
           mdui.alert('上传中...')
@@ -183,7 +173,7 @@ setTimeout(()=>{
   <template #item="{ item, url, index }">
     <div class="mdui-card">
   <div class="mdui-card-media">
-    <LazyImg :url="url" @click="display($event.target)" />
+    <LazyImg :url="item.link" @click="display($event.target)" />
     <div class="mdui-card-media-covered">
       <div class="mdui-card-primary">
         <div class="mdui-card-primary-title">第{{index}}张</div>

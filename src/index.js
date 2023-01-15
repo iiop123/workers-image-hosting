@@ -40,39 +40,46 @@ const pass='123'//默认登录密码
     res.redirect('/index.html')
   })
   
+
+  let header=new Headers()
+      header.set('access-control-allow-origin', '*')
   //上传api
 router.post(
     '/api', async ({req,res})=> {
       let form=req.body.formData()
-      let out=[]
-      let img=(await form).getAll('img')
+      let img=(await form).get('img')
       const img_check=new RegExp("(.*?)\.(png|jpe?g|gif|bmp|psd|tiff|tga|webp)","i")
       
+
       //文件格式验证
-      for (let i = 0; i < img.length; i++) {
-        if (img_check.test(img[i].name)) {
+        if (img_check.test(img.name)) {
+        
           let url=await randomString()
         let check=await LINK.get(url)
         if (check!==null) {
           url=await randomString()
         }
-      let stream=img[i].stream()
+      let stream=img.stream()
         await LINK.put(url,stream,{
           metadata:{
-            size:img[i].size,
+            size:img.size,
             name:url,
-            type:img[i].type,
+            type:img.type,
             date:new Date().getTime()
           }
         })
-        out.push(req.url+'/img/'+url)
-        }else{
-          res.status=400
-          out='非图片文件'
-          break
+        res.headers=header
+        res.body={
+          link: req.url+'/img/'+url
         }
-    }
-    res.body={src:out}
+        }
+        else{
+          res.status=400
+          res.headers=header
+          res.body={
+            info:'非图片文件404'
+          }
+        }
   }
   );
 
@@ -80,6 +87,7 @@ router.post(
   router.get('/api/img/:p', async ({req,res})=>{
     let body=await LINK.get(req.params.p,{cacheTtl:864000,type:"stream"})
     const { metadata } = await LINK.getWithMetadata(req.params.p);
+    res.headers=header
     res.type=metadata.type
     res.body=body
     
