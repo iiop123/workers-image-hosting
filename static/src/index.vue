@@ -5,6 +5,7 @@ import 'vue-loading-overlay/dist/css/index.css';
 import 'vue-waterfall-plugin-next/style.css'
 import 'https://cdn.jsdelivr.net/npm/viewerjs@1.11.1/dist/viewer.min.js'
 import axios from 'axios'
+const img_check=new RegExp("(.*?)\.(png|jpe?g|gif|bmp|psd|tiff|tga|webp)","i")
 export default{
     data(){
         return{
@@ -72,8 +73,9 @@ export default{
       ////
 
         for (let i = 0; i < file_id.files.length; i++) {
-          if (file_id.files[i].size>26214400) {
-            mdui.alert('文件大于25MB')
+          
+          if (file_id.files[i].size>26214400||!img_check.test(file_id.files[i].name)) {
+            mdui.alert('文件格式不正确')
          that.status=false
          continue
           }
@@ -89,7 +91,7 @@ export default{
           }
           that.status=false
         }).catch(err=>{
-            mdui.alert(err.response.data.link)
+            mdui.alert(err.response.data.info)
         return that.status=false
         })
     },
@@ -113,8 +115,8 @@ export default{
       ////
 
         for (let i = 0; i < file_id.length; i++) {
-          if (file_id[i].size>26214400) {
-            mdui.alert('文件大于25MB')
+          if (file_id[i].size>26214400||!img_check.test(file_id[i].name)) {
+            mdui.alert('文件格式不正确')
                continue
           }
          that.status=true
@@ -128,7 +130,7 @@ export default{
           }
           return that.status=false
         }).catch(err=>{
-            mdui.alert(err.response.data.link)
+            mdui.alert(err.response.data.info)
         return that.status=false
         })
     },
@@ -154,13 +156,9 @@ export default{
 </script>
 <template>
   <div id="drag" style="position: absolute; inset:0;">
-    <div style="inset: 0; z-index: 999;" v-show="over_page">  
-      <div style="background-color: white; opacity: 0.5; inset: 0; position: absolute;" ></div>
-    <div style="border: dashed 2px; top: 50%; text-align: center; z-index: 999; width: 50%; height: 30%;" class="center">
-      <div style="text-align: center;padding-top: 10%;position: absolute;width: 100%;height: 100%;" class="drop_text">
-        
-    </div>
-    </div>
+    <div class="overlay flex_center" v-if="over_page">  
+      <div class="drop_text flex_center">
+      </div>
 </div>
   <Transition name="loading">
     <Loading :active="this.status" loader="bars" width="50" height="50" color="rgb(0,123,255)"></Loading>
@@ -194,9 +192,29 @@ export default{
 </template>
 <style>
 @import 'https://cdn.jsdelivr.net/npm/viewerjs@1.11.1/dist/viewer.min.css';
+.drop_text{
+  border: dashed 2px;
+  border-radius: 10px;
+  width: 150px;
+  height: 150px;
+  color: white;
+  padding: 5px;
+  }
 .drop_text:before{
   content: '+将文件拖到此处，即可上传';
 }
+.overlay{
+  background-color: rgba(0,0,0,.7);
+  z-index: 10;
+  position: fixed;
+  inset: 0;
+}
+.flex_center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .lazy__img[lazy=loading] {
   padding: 5em 0;
   width: 48px;
