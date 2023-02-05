@@ -86,11 +86,16 @@ router.post(
   //获取图片
   router.get('/api/img/:p', async ({req,res})=>{
     let body=await LINK.get(req.params.p,{cacheTtl:864000,type:"stream"})
-    const { metadata } = await LINK.getWithMetadata(req.params.p);
+    let {metadata:{type,date,size}}=await LINK.getWithMetadata(req.params.p,{ type: "text" });
+    if (req.headers.has('If-None-Match')) {
+      return res.status=304
+      
+    }
     res.headers=header
-    res.type=metadata.type
+    res.headers.set('Cache-Control','public, max-age=864000')
+    res.type=type
+    res.etag=size
     res.body=body
-    
   })  
 
   //简易登陆验证
